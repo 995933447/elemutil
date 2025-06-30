@@ -69,6 +69,12 @@ func (l *LinkedList) Delete(payload interface{}) bool {
 		return false
 	}
 
+	l.DeleteNode(node)
+
+	return true
+}
+
+func (l *LinkedList) DeleteNode(node *LinkedNode) {
 	l.len--
 
 	if node.pre != nil {
@@ -78,8 +84,6 @@ func (l *LinkedList) Delete(payload interface{}) bool {
 	if node.next != nil {
 		node.next.pre = node.pre
 	}
-
-	return true
 }
 
 var ErrIdxOverLinkedListRange = errors.New("index over linked list range")
