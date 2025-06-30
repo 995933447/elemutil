@@ -14,6 +14,8 @@ func (l *LinkedList) Walk(fn func(node *LinkedNode) (bool, error)) error {
 	node := l.header
 
 	for node != nil {
+		next := node.next
+		
 		ok, err := fn(node)
 		if err != nil {
 			return err
@@ -23,7 +25,7 @@ func (l *LinkedList) Walk(fn func(node *LinkedNode) (bool, error)) error {
 			break
 		}
 
-		node = node.next
+		node = next
 	}
 
 	return nil
