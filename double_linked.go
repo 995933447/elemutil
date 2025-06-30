@@ -82,13 +82,13 @@ func (l *LinkedList) DeleteNode(node *LinkedNode) {
 	if node.pre != nil {
 		node.pre = node.next
 	} else {
-		l.header = nil
+		l.header = node.next
 	}
 
 	if node.next != nil {
 		node.next.pre = node.pre
 	} else {
-		l.tail = nil
+		l.tail = node.pre
 	}
 
 	node.next = nil
