@@ -15,7 +15,7 @@ func (l *LinkedList) Walk(fn func(node *LinkedNode) (bool, error)) error {
 
 	for node != nil {
 		next := node.next
-		
+
 		ok, err := fn(node)
 		if err != nil {
 			return err
@@ -86,6 +86,9 @@ func (l *LinkedList) DeleteNode(node *LinkedNode) {
 	if node.next != nil {
 		node.next.pre = node.pre
 	}
+
+	node.next = nil
+	node.pre = nil
 }
 
 var ErrIdxOverLinkedListRange = errors.New("index over linked list range")
