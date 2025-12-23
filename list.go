@@ -317,3 +317,52 @@ func PluckStringSet(list interface{}, fieldName string) (map[string]struct{}, er
 
 	return res, nil
 }
+
+// KeyBy 根据KeyFieldName 取出 map[key]val
+// 允许list长度为0
+func KeyBy(list interface{}, fieldName string) (interface{}, error) {
+	lv := reflect.ValueOf(list)
+
+	switch lv.Kind() {
+	case reflect.Slice, reflect.Array:
+	default:
+		return nil, errors.New("list required slice or array type")
+	}
+
+	ev := lv.Type().Elem()
+	evs := ev
+	for evs.Kind() == reflect.Ptr {
+		evs = evs.Elem()
+	}
+
+	if evs.Kind() != reflect.Struct {
+		return nil, errors.New("element not struct")
+	}
+
+	field, ok := evs.FieldByName(fieldName)
+	if !ok {
+		return nil, fmt.Errorf("field %s not found", fieldName)
+	}
+
+	m := reflect.MakeMapWithSize(reflect.MapOf(field.Type, ev), lv.Len())
+	for i := 0; i < lv.Len(); i++ {
+		elem := lv.Index(i)
+		elemStruct := elem
+		for elemStruct.Kind() == reflect.Ptr {
+			elemStruct = elemStruct.Elem()
+		}
+
+		// 如果是nil的，意味着key和value同时不存在，所以跳过不处理
+		if !elemStruct.IsValid() {
+			continue
+		}
+
+		if elemStruct.Kind() != reflect.Struct {
+			return nil, errors.New("element not struct")
+		}
+
+		m.SetMapIndex(elemStruct.FieldByIndex(field.Index), elem)
+	}
+
+	return m.Interface(), nil
+}
